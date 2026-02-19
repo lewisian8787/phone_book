@@ -47,10 +47,19 @@ app.delete(`/api/persons/:id`, (request, response) => {
 
 app.post(`/api/persons`, (request, response) => {
   let newContact = request.body
-  newContact.id = String(Math.floor(Math.random() * 1000))
-  contacts.push(newContact)
 
-  response.status(201).json(newContact)  
+  if (!newContact.name || !newContact.number) {
+    return response.status(400).json({ error: 'name or number missing' })
+  }
+
+  const person = new Person({
+    name: newContact.name,
+    number: newContact.number,
+  })
+
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 
