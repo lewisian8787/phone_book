@@ -20,29 +20,12 @@ app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :body')
 )
 
+//updated to use mongodb
+
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
   })
-})
-
-app.get('/info', (request, response) => {
-  response.send(`
-    <p>Phone has info for ${contacts.length} people.</p>
-    <p>Request received at ${new Date()}</p>
-  `)
-})
-app.get(`/api/persons/:id`, (request, response) => {
-  const id = request.params.id;
-  const contact = contacts.find(contact => contact.id)
-  response.json(contact)
-})
-
-app.delete(`/api/persons/:id`, (request, response) => {
-  const id = request.params.id
-  contacts = contacts.filter(contact => contact.id !== id)
-
-  response.status(204).end()
 })
 
 app.post(`/api/persons`, (request, response) => {
@@ -62,6 +45,27 @@ app.post(`/api/persons`, (request, response) => {
   })
 })
 
+app.get(`/api/persons/:id`, (request, response) => {
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
+})
+
+//legacy routes
+
+app.get('/info', (request, response) => {
+  response.send(`
+    <p>Phone has info for ${contacts.length} people.</p>
+    <p>Request received at ${new Date()}</p>
+  `)
+})
+
+app.delete(`/api/persons/:id`, (request, response) => {
+  const id = request.params.id
+  contacts = contacts.filter(contact => contact.id !== id)
+
+  response.status(204).end()
+})
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}.`)
