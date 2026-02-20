@@ -59,21 +59,17 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-//legacy routes
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
 
-// app.get('/info', (request, response) => {
-//   response.send(`
-//     <p>Phone has info for ${contacts.length} people.</p>
-//     <p>Request received at ${new Date()}</p>
-//   `)
-// })
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
 
-app.delete(`/api/persons/:id`, (request, response) => {
-  const id = request.params.id
-  contacts = contacts.filter(contact => contact.id !== id)
+  next(error)
+}
 
-  response.status(204).end()
-})
+app.use(errorHandler)
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}.`)
