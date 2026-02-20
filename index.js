@@ -51,14 +51,22 @@ app.get(`/api/persons/:id`, (request, response) => {
   })
 })
 
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
 //legacy routes
 
-app.get('/info', (request, response) => {
-  response.send(`
-    <p>Phone has info for ${contacts.length} people.</p>
-    <p>Request received at ${new Date()}</p>
-  `)
-})
+// app.get('/info', (request, response) => {
+//   response.send(`
+//     <p>Phone has info for ${contacts.length} people.</p>
+//     <p>Request received at ${new Date()}</p>
+//   `)
+// })
 
 app.delete(`/api/persons/:id`, (request, response) => {
   const id = request.params.id
